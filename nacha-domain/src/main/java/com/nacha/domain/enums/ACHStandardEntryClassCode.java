@@ -2,8 +2,8 @@ package com.nacha.domain.enums;
 
 public enum ACHStandardEntryClassCode {
 	
-	CCD(2, "CCD"),
-	PPD(1,  "PPD");
+	PPD(1,  "PPD"),
+	CCD(2, "CCD");
 	
 	private final Integer code;
 	private final String name;
