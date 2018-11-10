@@ -5,7 +5,7 @@ import org.springframework.batch.item.file.transform.FieldSet;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 
-import com.nacha.domain.batch.PaymentBatch;
+import com.nacha.domain.batch.AbstractACHBatch;
 /**
  * 
  * 
@@ -15,11 +15,11 @@ Indicator, Service class code, Chase Acct, SEC Code, Entry description, Effectiv
  * @author abnig19
  *
  */
-@Component("paymentBatchFieldSetMapper")
-public class  PaymentBatchFieldSetMapper implements FieldSetMapper<PaymentBatch> {
+@Component("abstractACHBatchFieldSetMapper")
+public class  AbstractACHBatchFieldSetMapper implements FieldSetMapper<AbstractACHBatch> {
 
 	@Override
-	public PaymentBatch mapFieldSet(FieldSet fieldSet) throws BindException {
+	public AbstractACHBatch mapFieldSet(FieldSet fieldSet) throws BindException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -13,10 +13,11 @@ public class BaseNachaBatchProcessor<P extends AbstractACHBatch> implements Item
 	@Autowired
 	private BatchClassifier batchClassifier;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public P process(AbstractACHBatch item) throws Exception {
 		ItemProcessor<AbstractACHBatch, ? super AbstractACHBatch> itemProcessor = batchClassifier.classify(item.getAchFileBatchDescription());
-		return itemProcessor.process(item);
+		return (P) itemProcessor.process(item);
 	}
 
 
