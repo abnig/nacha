@@ -7,20 +7,17 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.mapping.PatternMatchingCompositeLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.file.transform.LineTokenizer;
-import org.springframework.batch.item.support.ClassifierCompositeItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import com.nacha.batch.processor.BaseNachaBatchProcessor;
 import com.nacha.batch.processor.PaymentBatchProcessor;
 import com.nacha.batch.processor.ReversalBatchProcessor;
 import com.nacha.batch.processor.classifier.BatchClassifier;
-import com.nacha.batch.reader.fieldmapper.ACHBatchFieldSetMapperFactory;
+import com.nacha.batch.reader.fieldmapper.AbstractACHBatchFieldSetMapper;
+import com.nacha.batch.reader.fieldmapper.AbstractACHTransactionFieldSetMapper;
 import com.nacha.batch.reader.fieldmapper.FileHeaderFieldSetMapper;
-import com.nacha.batch.reader.fieldmapper.PaymentBatchFieldSetMapper;
-import com.nacha.batch.reader.fieldmapper.ReversalBatchFieldSetMapper;
 import com.nacha.domain.batch.AbstractACHBatch;
 import com.nacha.domain.enums.ACHFileBatchDescription;
 
@@ -32,13 +29,7 @@ public class NachaBatchBeanConfig {
 	private FileHeaderFieldSetMapper fileHeaderFieldSetMapper;
 	
 	@Autowired
-	private  PaymentBatchFieldSetMapper paymentBatchFieldSetMapper;
-	
-	@Autowired
-	private ReversalBatchFieldSetMapper reversalBatchFieldSetMapper;
-	
-	@Autowired
-	private ACHBatchFieldSetMapperFactory achBatchFieldSetMapperFactory;
+	private  AbstractACHBatchFieldSetMapper paymentBatchFieldSetMapper;
 	
 	@Autowired
 	private PaymentBatchProcessor paymentBatchProcessor;
@@ -48,6 +39,9 @@ public class NachaBatchBeanConfig {
 	
 	@Autowired
 	private BatchClassifier batchClassifier;
+	
+	@Autowired
+	private AbstractACHTransactionFieldSetMapper abstractACHTransactionFieldSetMapper;
 
 	@Bean
 	public LineTokenizer delimitedLineTokenizer() {
