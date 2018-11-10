@@ -3,19 +3,26 @@ package com.nacha.batch;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.batch.item.file.mapping.FieldSetMapper;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.file.mapping.PatternMatchingCompositeLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.file.transform.LineTokenizer;
+import org.springframework.batch.item.support.ClassifierCompositeItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import com.nacha.batch.processor.BaseNachaBatchProcessor;
+import com.nacha.batch.processor.PaymentBatchProcessor;
+import com.nacha.batch.processor.ReversalBatchProcessor;
+import com.nacha.batch.processor.classifier.BatchClassifier;
 import com.nacha.batch.reader.fieldmapper.ACHBatchFieldSetMapperFactory;
 import com.nacha.batch.reader.fieldmapper.FileHeaderFieldSetMapper;
 import com.nacha.batch.reader.fieldmapper.PaymentBatchFieldSetMapper;
 import com.nacha.batch.reader.fieldmapper.ReversalBatchFieldSetMapper;
+import com.nacha.domain.batch.AbstractACHBatch;
+import com.nacha.domain.enums.ACHFileBatchDescription;
 
 @Configuration
 @ComponentScan("com.nacha")
@@ -32,6 +39,15 @@ public class NachaBatchBeanConfig {
 	
 	@Autowired
 	private ACHBatchFieldSetMapperFactory achBatchFieldSetMapperFactory;
+	
+	@Autowired
+	private PaymentBatchProcessor paymentBatchProcessor;
+	
+	@Autowired
+	private ReversalBatchProcessor reversalBatchProcessor;
+	
+	@Autowired
+	private BatchClassifier batchClassifier;
 
 	@Bean
 	public LineTokenizer delimitedLineTokenizer() {
@@ -58,62 +74,11 @@ public class NachaBatchBeanConfig {
 	}
 	
 	@Bean
-	public Map<String, LineTokenizer> fieldSetMapperMap(FileHeaderFieldSetMapper fileHeaderFieldSetMapper, PaymentBatchFieldSetMapper paymentBatchFieldSetMapper,
-			ReversalBatchFieldSetMapper reversalBatchFieldSetMapper) {
-		Map<String, FieldSetMapper> map = new HashMap<String, FieldSetMapper>();
-		map.put("1*", fileHeaderFieldSetMapper);
-		map.put("5*", payment);		
-		map.put("6*", delimitedLineTokenizer);				
+	public Map<ACHFileBatchDescription, ItemProcessor<AbstractACHBatch, ?>> itemProcessorMap(PaymentBatchProcessor paymentBatchProcessor, 
+			ReversalBatchProcessor reversalBatchProcessor) {
+		Map<ACHFileBatchDescription, ItemProcessor<AbstractACHBatch, ?>> itemProcessorMap = new HashMap<>();
+		itemProcessorMap.put(ACHFileBatchDescription.PAYROLL_PAYMENT, paymentBatchProcessor);
+		itemProcessorMap.put(ACHFileBatchDescription.REVERSAL, reversalBatchProcessor);
+		return itemProcessorMap;
 	}
-	
-	/*
-	<bean id="orderFileLineMapper" class="org.spr...PatternMatchingCompositeLineMapper">
-	  <property name="tokenizers">
-	    <map>
-	      <entry key="USER*" value-ref="userTokenizer" />
-	      <entry key="LINEA*" value-ref="lineATokenizer" />
-	      <entry key="LINEB*" value-ref="lineBTokenizer" />
-	    </map>
-	  </property>
-	  <property name="fieldSetMappers">
-	    <map>
-	      <entry key="USER*" value-ref="userFieldSetMapper" />
-	      <entry key="LINE*" value-ref="lineFieldSetMapper" />
-	    </map>
-	  </property>
-	</bean>
-	 */
-	/*
-	@Bean
-	public FlatFileItemReader<Employee> reader()
-	{
-	    //Create reader instance
-	    FlatFileItemReader<Employee> reader = new FlatFileItemReader<Employee>();
-	     
-	    //Set input file location
-	    reader.setResource(new FileSystemResource("input/inputData.csv"));
-	     
-	    //Set number of lines to skips. Use it if file has header rows.
-	    reader.setLinesToSkip(1);  
-	     
-	    //Configure how each line will be parsed and mapped to different values
-	    reader.setLineMapper(new DefaultLineMapper() {
-	        {
-	            //3 columns in each row
-	            setLineTokenizer(new DelimitedLineTokenizer() {
-	                {
-	                    setNames(new String[] { "id", "firstName", "lastName" });
-	                }
-	            });
-	            //Set values in Employee class
-	            setFieldSetMapper(new BeanWrapperFieldSetMapper<Employee>() {
-	                {
-	                    setTargetType(Employee.class);
-	                }
-	            });
-	        }
-	    });
-	    return reader;
-	}
-	*/
 }
