@@ -1,4 +1,4 @@
-package com.nacha.batch;
+package com.nacha.batch.beanconfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,11 +44,30 @@ public class NachaBatchBeanConfig {
 	private AbstractACHTransactionFieldSetMapper abstractACHTransactionFieldSetMapper;
 
 	@Bean
-	public LineTokenizer delimitedLineTokenizer() {
+	public DelimitedLineTokenizer delimitedLineTokenizer() {
 		DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
 		delimitedLineTokenizer.setStrict(Boolean.TRUE);
 		return delimitedLineTokenizer;
 	}
+	
+	@Bean
+	public LineTokenizer headerRecordLineTokenizer(DelimitedLineTokenizer delimitedLineTokenizer) {
+		delimitedLineTokenizer.setNames("indicator,fileId,creationDate,creationTime,totalTransactionCount,totalCreditAmount,totalDebitAmount,batchCount".split(","));
+		return delimitedLineTokenizer;
+	}
+	
+	@Bean
+	public LineTokenizer batchRecordLineTokenizer(DelimitedLineTokenizer delimitedLineTokenizer) {
+		delimitedLineTokenizer.setNames("indicator,achServiceClassCode,accountNumber,achStandardEntryClassCode,achFileBatchDescription,effectiveEntryDate,totalCreditAmount,totalDebitAmount,batchNumber,numberOfTransactionsInBatch".split(","));
+		return delimitedLineTokenizer;
+	}
+	
+	@Bean
+	public LineTokenizer transactionRecordLineTokenizer(DelimitedLineTokenizer delimitedLineTokenizer) {
+		delimitedLineTokenizer.setNames("");
+		return delimitedLineTokenizer;
+	}
+	
 	
 	@Bean
 	public Map<String, LineTokenizer> tokenizerMap(LineTokenizer delimitedLineTokenizer){

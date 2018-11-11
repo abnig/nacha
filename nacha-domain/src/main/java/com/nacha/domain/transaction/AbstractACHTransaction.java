@@ -1,43 +1,61 @@
 package com.nacha.domain.transaction;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import com.nacha.domain.enums.ACHTransactionCode;
 
 public abstract class AbstractACHTransaction {
 
+	private final String indicator;
 	private final String accountNumber;
 	private final ACHTransactionCode achTransactionCode;
 	private final String addenda;
 	private final Set<Integer> errorCodeSet;
 	private final String identificationNumber;
 	private final String routingNumber;
-	private final Long traceNumber;
 	private final Long transactionId;
+	private final BigDecimal transactionAmount;
+	private final String payeeName;
 
-	public AbstractACHTransaction(String accountNumber, ACHTransactionCode achTransactionCode, String addenda,
-			Set<Integer> errorCodeSet, String identificationNumber, String routingNumber, Long traceNumber,
-			Long transactionId) {
-		super();
-		this.accountNumber = accountNumber;
+	public AbstractACHTransaction(String indicator, ACHTransactionCode achTransactionCode, String routingNumber,
+			String accountNumber, BigDecimal transactionAmount, String identificationNumber, String payeeName,
+			Long transactionId, String addenda, Set<Integer> errorCodeSet) {
+		this.indicator = indicator;
 		this.achTransactionCode = achTransactionCode;
+		this.routingNumber = routingNumber;
+		this.accountNumber = accountNumber;
+		this.transactionAmount = transactionAmount;
+		this.identificationNumber = identificationNumber;
+		this.payeeName = payeeName;
+		this.transactionId = transactionId;
 		this.addenda = addenda;
 		this.errorCodeSet = errorCodeSet;
-		this.identificationNumber = identificationNumber;
-		this.routingNumber = routingNumber;
-		this.traceNumber = traceNumber;
-		this.transactionId = transactionId;
 	}
 
 	public AbstractACHTransaction(AbstractACHTransaction abstractACHTransaction) {
-		this.accountNumber = abstractACHTransaction.getAccountNumber();
+		this.indicator = abstractACHTransaction.getIndicator();
 		this.achTransactionCode = abstractACHTransaction.getAchTransactionCode();
+		this.routingNumber = abstractACHTransaction.getRoutingNumber();
+		this.accountNumber = abstractACHTransaction.getAccountNumber();
+		this.transactionAmount = abstractACHTransaction.getTransactionAmount();
+		this.identificationNumber = abstractACHTransaction.getIdentificationNumber();
+		this.payeeName = abstractACHTransaction.getPayeeName();
+		this.transactionId = abstractACHTransaction.getTransactionId();
 		this.addenda = abstractACHTransaction.getAddenda();
 		this.errorCodeSet = abstractACHTransaction.getErrorCodeSet();
-		this.identificationNumber = abstractACHTransaction.getIdentificationNumber();
-		this.routingNumber = abstractACHTransaction.getRoutingNumber();
-		this.traceNumber = abstractACHTransaction.getTraceNumber();
-		this.transactionId = abstractACHTransaction.getTransactionId();
+	}
+
+	public String getIndicator() {
+		return indicator;
+	}
+
+	public BigDecimal getTransactionAmount() {
+		return transactionAmount;
+	}
+
+	public String getPayeeName() {
+		return payeeName;
 	}
 
 	public String getAccountNumber() {
@@ -62,10 +80,6 @@ public abstract class AbstractACHTransaction {
 
 	public String getRoutingNumber() {
 		return routingNumber;
-	}
-
-	public Long getTraceNumber() {
-		return traceNumber;
 	}
 
 	public Long getTransactionId() {

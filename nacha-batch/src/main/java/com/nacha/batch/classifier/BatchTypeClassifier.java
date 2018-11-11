@@ -1,4 +1,4 @@
-package com.nacha.batch;
+package com.nacha.batch.classifier;
 
 import java.util.Map;
 
