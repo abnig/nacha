@@ -6,23 +6,23 @@ import com.nacha.domain.composite.BatchTransactionCompositeObject;
 
 public class CSVFile extends AbstractACHFile {
 	
-	private FileHeader fileHader;
+	private FileHeader fileHeader;
 	private Set<BatchTransactionCompositeObject> batchTransactionCompositeObject; 
 	
 	public CSVFile(AbstractACHFile abstractACHFile) {
 		super(abstractACHFile);
 	}
 	
-	public FileHeader getFileHader() {
-		return fileHader;
+	public FileHeader getFileHeader() {
+		return fileHeader;
 	}
 
 	public Set<BatchTransactionCompositeObject> getBatchTransactionCompositeObject() {
 		return batchTransactionCompositeObject;
 	}
 
-	public void setFileHader(FileHeader fileHader) {
-		this.fileHader = fileHader;
+	public void setFileHeader(FileHeader fileHeader) {
+		this.fileHeader = fileHeader;
 	}
 
 	public void setBatchTransactionCompositeObject(Set<BatchTransactionCompositeObject> batchTransactionCompositeObject) {

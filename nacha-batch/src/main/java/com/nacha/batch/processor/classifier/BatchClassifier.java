@@ -20,7 +20,7 @@ public final class BatchClassifier implements Classifier<ACHFileBatchDescription
 
 	@Autowired
 	private final Map<ACHFileBatchDescription, ItemProcessor<AbstractACHBatch, ? super AbstractACHBatch>> itemProcessorMap;
-	
+
 	public BatchClassifier(Map<ACHFileBatchDescription, ItemProcessor<AbstractACHBatch, ? super AbstractACHBatch>> itemProcessorMap) {
 		super();
 		this.itemProcessorMap = itemProcessorMap;

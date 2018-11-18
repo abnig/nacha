@@ -1,5 +1,6 @@
 package com.nacha.domain.composite;
 
+import java.util.Collections;
 import java.util.Set;
 
 import com.nacha.domain.batch.AbstractACHBatch;
@@ -22,7 +23,11 @@ public class BatchTransactionCompositeObject {
 	}
 
 	public Set<AbstractACHTransaction> getTransactionSet() {
-		return transactionSet;
+		return Collections.unmodifiableSet(this.transactionSet);
+	}
+	
+	public <T extends AbstractACHTransaction> void addTransactionToSet(T t) {
+		this.transactionSet.add(t);
 	}
 	
 }

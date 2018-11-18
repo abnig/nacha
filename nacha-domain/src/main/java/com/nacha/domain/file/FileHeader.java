@@ -21,6 +21,18 @@ public class FileHeader {
 	private final BigDecimal totalCreditAmount;
 	private final BigDecimal totalDebitAmount;
 	
+	public FileHeader(FileHeader fileHeader) {
+		super();
+		this.indicator = fileHeader.getIndicator();
+		this.fileId = fileHeader.getFileId();
+		this.creationDate = fileHeader.getCreationDate();
+		this.creationTime = fileHeader.getCreationTime();
+		this.totalTransactionCount = fileHeader.getTotalTransactionCount();
+		this.totalBatchCount = fileHeader.getTotalBatchCount();
+		this.totalCreditAmount = fileHeader.getTotalCreditAmount();
+		this.totalDebitAmount = fileHeader.getTotalDebitAmount();
+	}
+	
 	public FileHeader(Integer indicator, String fileId, Date creationDate, Date creationTime,
 			Integer totalTransactionCount, Integer totalBatchCount, BigDecimal totalCreditAmount,
 			BigDecimal totalDebitAmount) {
