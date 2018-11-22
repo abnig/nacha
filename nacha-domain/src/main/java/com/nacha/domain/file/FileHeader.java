@@ -34,8 +34,9 @@ public class FileHeader {
 	}
 	
 	public FileHeader(Integer indicator, String fileId, Date creationDate, Date creationTime,
-			Integer totalTransactionCount, Integer totalBatchCount, BigDecimal totalCreditAmount,
-			BigDecimal totalDebitAmount) {
+			Integer totalTransactionCount, BigDecimal totalCreditAmount,
+			BigDecimal totalDebitAmount,
+			Integer totalBatchCount) {
 		super();
 		this.indicator = indicator;
 		this.fileId = fileId;
@@ -70,6 +71,81 @@ public class FileHeader {
 	}
 	public BigDecimal getTotalDebitAmount() {
 		return totalDebitAmount;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((creationDate == null) ? 0 : creationDate.hashCode());
+		result = prime * result + ((creationTime == null) ? 0 : creationTime.hashCode());
+		result = prime * result + ((fileId == null) ? 0 : fileId.hashCode());
+		result = prime * result + ((indicator == null) ? 0 : indicator.hashCode());
+		result = prime * result + ((totalBatchCount == null) ? 0 : totalBatchCount.hashCode());
+		result = prime * result + ((totalCreditAmount == null) ? 0 : totalCreditAmount.hashCode());
+		result = prime * result + ((totalDebitAmount == null) ? 0 : totalDebitAmount.hashCode());
+		result = prime * result + ((totalTransactionCount == null) ? 0 : totalTransactionCount.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FileHeader other = (FileHeader) obj;
+		if (creationDate == null) {
+			if (other.creationDate != null)
+				return false;
+		} else if (!creationDate.equals(other.creationDate))
+			return false;
+		if (creationTime == null) {
+			if (other.creationTime != null)
+				return false;
+		} else if (!creationTime.equals(other.creationTime))
+			return false;
+		if (fileId == null) {
+			if (other.fileId != null)
+				return false;
+		} else if (!fileId.equals(other.fileId))
+			return false;
+		if (indicator == null) {
+			if (other.indicator != null)
+				return false;
+		} else if (!indicator.equals(other.indicator))
+			return false;
+		if (totalBatchCount == null) {
+			if (other.totalBatchCount != null)
+				return false;
+		} else if (!totalBatchCount.equals(other.totalBatchCount))
+			return false;
+		if (totalCreditAmount == null) {
+			if (other.totalCreditAmount != null)
+				return false;
+		} else if (!totalCreditAmount.equals(other.totalCreditAmount))
+			return false;
+		if (totalDebitAmount == null) {
+			if (other.totalDebitAmount != null)
+				return false;
+		} else if (!totalDebitAmount.equals(other.totalDebitAmount))
+			return false;
+		if (totalTransactionCount == null) {
+			if (other.totalTransactionCount != null)
+				return false;
+		} else if (!totalTransactionCount.equals(other.totalTransactionCount))
+			return false;
+		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "FileHeader [indicator=" + indicator + ", fileId=" + fileId + ", creationDate=" + creationDate
+				+ ", creationTime=" + creationTime + ", totalTransactionCount=" + totalTransactionCount
+				+ ", totalBatchCount=" + totalBatchCount + ", totalCreditAmount=" + totalCreditAmount
+				+ ", totalDebitAmount=" + totalDebitAmount + "]";
 	}
 	
 }

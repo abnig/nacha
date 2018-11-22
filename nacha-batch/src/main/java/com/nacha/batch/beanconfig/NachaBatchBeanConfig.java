@@ -57,8 +57,6 @@ public class NachaBatchBeanConfig {
 	@Autowired
 	private StepBuilderFactory steps;
 	
-
-
 	@Autowired
 	private AbstractACHBatchFieldSetMapper abstractACHBatchFieldSetMapper;
 
@@ -72,23 +70,12 @@ public class NachaBatchBeanConfig {
 	}
 
 	@Bean
-	public DelimitedLineTokenizer batchRecordLineTokenizer() {
-		DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
-		delimitedLineTokenizer.setStrict(Boolean.TRUE);
-		delimitedLineTokenizer.setNames(
-				"indicator,achServiceClassCode,accountNumber,achStandardEntryClassCode,achFileBatchDescription,effectiveEntryDate,totalCreditAmount,totalDebitAmount,batchNumber,numberOfTransactionsInBatch"
-						.split(","));
-		return delimitedLineTokenizer;
-	}
-
-	@Bean
-	public DelimitedLineTokenizer transactionRecordLineTokenizer() {
-		DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
-		delimitedLineTokenizer.setStrict(Boolean.TRUE);
-		delimitedLineTokenizer.setNames(
-				"indicator, achTransactionCode, routingNumber, accountNumber, transactionAmount, identificationNumber, payeeName, transactionId, addenda"
-						.split(","));
-		return delimitedLineTokenizer;
+	public Map<ACHFileBatchDescription, ItemProcessor<AbstractACHBatch, ? super AbstractACHBatch>> itemProcessorMap(
+			PaymentBatchProcessor paymentBatchProcessor, ReversalBatchProcessor reversalBatchProcessor) {
+		Map<ACHFileBatchDescription, ItemProcessor<AbstractACHBatch, ? super AbstractACHBatch>> itemProcessorMap = new HashMap<>();
+		itemProcessorMap.put(ACHFileBatchDescription.PAYROLL_PAYMENT, paymentBatchProcessor);
+		itemProcessorMap.put(ACHFileBatchDescription.REVERSAL, reversalBatchProcessor);
+		return itemProcessorMap;
 	}
 
 	/*
@@ -137,15 +124,6 @@ public class NachaBatchBeanConfig {
 		patternMatchingCompositeLineMapper.setTokenizers(tokenizerMap);
 		patternMatchingCompositeLineMapper.setFieldSetMappers(fieldSetMapperMap);
 		return patternMatchingCompositeLineMapper;
-	}
-
-	@Bean
-	public Map<ACHFileBatchDescription, ItemProcessor<AbstractACHBatch, ? super AbstractACHBatch>> itemProcessorMap(
-			PaymentBatchProcessor paymentBatchProcessor, ReversalBatchProcessor reversalBatchProcessor) {
-		Map<ACHFileBatchDescription, ItemProcessor<AbstractACHBatch, ? super AbstractACHBatch>> itemProcessorMap = new HashMap<>();
-		itemProcessorMap.put(ACHFileBatchDescription.PAYROLL_PAYMENT, paymentBatchProcessor);
-		itemProcessorMap.put(ACHFileBatchDescription.REVERSAL, reversalBatchProcessor);
-		return itemProcessorMap;
 	}
 
 	@Bean

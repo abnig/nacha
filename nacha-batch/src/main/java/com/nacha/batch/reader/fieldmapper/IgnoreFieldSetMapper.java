@@ -14,11 +14,10 @@ Indicator, Service class code, Chase Acct, SEC Code, Entry description, Effectiv
  *
  */
 @Component("ignoreFieldSetMapper")
-public class  IgnoreFieldSetMapper implements FieldSetMapper<String> {
+public class  IgnoreFieldSetMapper implements FieldSetMapper<Void> {
 
 	@Override
-	public String mapFieldSet(FieldSet fieldSet) throws BindException {
-		// TODO Auto-generated method stub
+	public Void mapFieldSet(FieldSet fieldSet) throws BindException {
 		return null;
 	}
 

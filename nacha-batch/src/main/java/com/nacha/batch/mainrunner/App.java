@@ -28,26 +28,7 @@ public class App implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		JobParameters params = new JobParametersBuilder().addString("JobID", String.valueOf(System.currentTimeMillis()))
-				.toJobParameters();
-		jobLauncher.run(job, params);
-	}
 
-	public JobLauncher getJobLauncher() {
-		return jobLauncher;
 	}
-
-	public Job getJob() {
-		return job;
-	}
-
-	public void setJobLauncher(JobLauncher jobLauncher) {
-		this.jobLauncher = jobLauncher;
-	}
-
-	public void setJob(Job job) {
-		this.job = job;
-	}
-	
 	
 }

@@ -1,6 +1,6 @@
 package com.nacha.batch.beanconfig;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.batch.core.Step;
@@ -22,8 +22,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
-import com.nacha.batch.reader.fieldmapper.AbstractACHBatchFieldSetMapper;
-import com.nacha.batch.reader.fieldmapper.AbstractACHTransactionFieldSetMapper;
 import com.nacha.batch.reader.fieldmapper.FileHeaderFieldSetMapper;
 import com.nacha.domain.file.FileHeader;
 
@@ -35,12 +33,14 @@ public class FileHeaderRecordStepBeanConfig {
 	@Autowired
 	private FileHeaderFieldSetMapper fileHeaderFieldSetMapper;
 
+	@SuppressWarnings("unused")
 	@Autowired
 	private ItemWriter<FileHeader> fileHeaderPassThroughItemWriter;
-	
+
 	@Autowired
-	private FieldSetMapper<String> ignoreFieldSetMapper; 
-	
+	private FieldSetMapper<Void> ignoreFieldSetMapper;
+
+	@SuppressWarnings("unused")
 	@Autowired
 	private JobBuilderFactory jobs;
 
@@ -52,7 +52,29 @@ public class FileHeaderRecordStepBeanConfig {
 		DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
 		delimitedLineTokenizer.setStrict(Boolean.TRUE);
 		delimitedLineTokenizer.setDelimiter(",");
-		delimitedLineTokenizer.setNames("indicator,fileId,creationDate,creationTime,totalTransactionCount,totalCreditAmount,totalDebitAmount,batchCount".split(","));
+		delimitedLineTokenizer.setNames(
+				"indicator,fileId,creationDate,creationTime,totalTransactionCount,totalCreditAmount,totalDebitAmount,batchCount"
+						.split(","));
+		return delimitedLineTokenizer;
+	}
+
+	@Bean
+	public DelimitedLineTokenizer batchRecordLineTokenizer() {
+		DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
+		delimitedLineTokenizer.setStrict(Boolean.TRUE);
+		delimitedLineTokenizer.setNames(
+				"indicator,achServiceClassCode,accountNumber,achStandardEntryClassCode,achFileBatchDescription,effectiveEntryDate,totalCreditAmount,totalDebitAmount,batchNumber,numberOfTransactionsInBatch"
+						.split(","));
+		return delimitedLineTokenizer;
+	}
+
+	@Bean
+	public DelimitedLineTokenizer transactionRecordLineTokenizer() {
+		DelimitedLineTokenizer delimitedLineTokenizer = new DelimitedLineTokenizer();
+		delimitedLineTokenizer.setStrict(Boolean.TRUE);
+		delimitedLineTokenizer.setNames(
+				"indicator, achTransactionCode, routingNumber, accountNumber, transactionAmount, identificationNumber, payeeName, transactionId, addenda"
+						.split(","));
 		return delimitedLineTokenizer;
 	}
 
@@ -64,35 +86,33 @@ public class FileHeaderRecordStepBeanConfig {
 		studentLineMapper.setFieldSetMapper(fileHeaderFieldSetMapper);
 		return studentLineMapper;
 	}
-	
-	@Bean
-	public Map<String, FieldSetMapper<?>> fileHeaderReaderStepFieldSetMapperMap(FileHeaderFieldSetMapper fileHeaderFieldSetMapper) {
-		Map<String, FieldSetMapper<?>> map = new HashMap<String, FieldSetMapper<?>>();
-		map.put("1*", fileHeaderFieldSetMapper);		
-		map.put("5*", this.ignoreFieldSetMapper);
-		map.put("6*", this.ignoreFieldSetMapper);
-		return map;
-	}
-
-	@Bean
-	public Map<String, LineTokenizer> fileHeaderReaderStepTokenizerMap(DelimitedLineTokenizer headerRecordLineTokenizer, DelimitedLineTokenizer transactionRecordLineTokenizer) {
-		Map<String, LineTokenizer> map = new HashMap<String, LineTokenizer>();
-		map.put("1*", headerRecordLineTokenizer);
-		return map;
-	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
 	public PatternMatchingCompositeLineMapper fileHeaderReaderStepPatternMatchingCompositeLineMapper(
-			Map<String, LineTokenizer> fileHeaderReaderStepTokenizerMap, Map<String, FieldSetMapper<?>> fileHeaderReaderStepFieldSetMapperMap) {
+			DelimitedLineTokenizer headerRecordLineTokenizer, DelimitedLineTokenizer batchRecordLineTokenizer,
+			DelimitedLineTokenizer transactionRecordLineTokenizer) {
+
+		Map<String, FieldSetMapper<?>> map1 = new LinkedHashMap<String, FieldSetMapper<?>>();
+		map1.put("1*", this.fileHeaderFieldSetMapper);
+		map1.put("5*", this.ignoreFieldSetMapper);
+		map1.put("6*", this.ignoreFieldSetMapper);
+
+		Map<String, LineTokenizer> map = new LinkedHashMap<String, LineTokenizer>();
+		map.put("1*", headerRecordLineTokenizer);
+		map.put("5*", batchRecordLineTokenizer);
+		map.put("6*", transactionRecordLineTokenizer);		
+
 		PatternMatchingCompositeLineMapper patternMatchingCompositeLineMapper = new PatternMatchingCompositeLineMapper<>();
-		patternMatchingCompositeLineMapper.setTokenizers(fileHeaderReaderStepTokenizerMap);
-		patternMatchingCompositeLineMapper.setFieldSetMappers(fileHeaderReaderStepFieldSetMapperMap);
+		patternMatchingCompositeLineMapper.setTokenizers(map);
+		patternMatchingCompositeLineMapper.setFieldSetMappers(map1);
 		return patternMatchingCompositeLineMapper;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
-	public ItemReader<FileHeader> csvFileHeaderItemReader(PatternMatchingCompositeLineMapper fileHeaderReaderStepPatternMatchingCompositeLineMapper) {
+	public ItemReader<FileHeader> csvFileHeaderItemReader(
+			PatternMatchingCompositeLineMapper fileHeaderReaderStepPatternMatchingCompositeLineMapper) {
 		FlatFileItemReader<FileHeader> csvFileReader = new FlatFileItemReader<>();
 		csvFileReader.setResource(new ClassPathResource("file.txt"));
 		csvFileReader.setLineMapper(fileHeaderReaderStepPatternMatchingCompositeLineMapper);
@@ -100,9 +120,10 @@ public class FileHeaderRecordStepBeanConfig {
 	}
 
 	@Bean
-	public Step headerReaderStep(ItemReader<FileHeader> csvFileHeaderItemReader, ItemWriter<FileHeader> fileHeaderPassThroughItemWriter) {
-		return steps.get("fileHeaderReaderStep").<FileHeader, FileHeader>chunk(10)
-				.reader(csvFileHeaderItemReader).writer(fileHeaderPassThroughItemWriter).build();
+	public Step headerReaderStep(ItemReader<FileHeader> csvFileHeaderItemReader,
+			ItemWriter<FileHeader> fileHeaderPassThroughItemWriter) {
+		return steps.get("fileHeaderReaderStep").<FileHeader, FileHeader>chunk(10).reader(csvFileHeaderItemReader)
+				.writer(fileHeaderPassThroughItemWriter).build();
 	}
 
 }

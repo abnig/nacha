@@ -36,10 +36,10 @@ public class FileHeaderPassThroughItemWriter implements ItemWriter<FileHeader>, 
 	public ExitStatus afterStep(StepExecution stepExecution) {
 		if (this.fileHeader != null) {
 			stepExecution.getExecutionContext().put("fileHeader", this.fileHeader);
-			logger.info("Added file Header record to execution context with key=fileHeader " + fileHeader.toString());
+			logger.info("Added file Header record to execution context with key='fileHeader' " + fileHeader.toString());
 			return ExitStatus.COMPLETED;
 		} else {
-			logger.info("Failed to read File Header or adding it to execution context with key=fileHeader ");
+			logger.info("Failed to read File Header/adding it to execution context with key=fileHeader ");
 			return ExitStatus.FAILED;
 		}
 
