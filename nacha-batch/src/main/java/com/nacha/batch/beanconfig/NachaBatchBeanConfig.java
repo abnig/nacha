@@ -12,20 +12,12 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.mapping.FieldSetMapper;
-import org.springframework.batch.item.file.mapping.PatternMatchingCompositeLineMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.batch.item.file.transform.LineTokenizer;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ClassPathResource;
 
 import com.nacha.batch.processor.PaymentBatchProcessor;
 import com.nacha.batch.processor.ReversalBatchProcessor;
@@ -39,7 +31,7 @@ import com.nacha.domain.enums.ACHFileBatchDescription;
 @Configuration
 @ComponentScan("com.nacha")
 @EnableBatchProcessing
-@Import(value = FileHeaderRecordStepBeanConfig.class)
+@Import(value = BatchTransactionReaderStepBeanConfig.class)
 public class NachaBatchBeanConfig {
 
 	@Autowired
@@ -145,8 +137,11 @@ public class NachaBatchBeanConfig {
 	}
 	 */
 	@Bean
-	public Job job(Step headerReaderStep) {
-		return jobs.get("job").start(headerReaderStep).build();
+	public Job job(Step headerReaderStep, Step batchReaderStep) {
+		return jobs.get("job")
+				.start(headerReaderStep)
+				.next(batchReaderStep)
+				.build();
 	}
 
 	@Bean

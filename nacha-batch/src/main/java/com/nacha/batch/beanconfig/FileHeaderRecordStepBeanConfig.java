@@ -10,8 +10,6 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.LineMapper;
-import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.mapping.PatternMatchingCompositeLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
@@ -32,7 +30,7 @@ public class FileHeaderRecordStepBeanConfig {
 
 	@Autowired
 	private FileHeaderFieldSetMapper fileHeaderFieldSetMapper;
-
+	
 	@SuppressWarnings("unused")
 	@Autowired
 	private ItemWriter<FileHeader> fileHeaderPassThroughItemWriter;
@@ -78,15 +76,6 @@ public class FileHeaderRecordStepBeanConfig {
 		return delimitedLineTokenizer;
 	}
 
-	@Bean
-	public LineMapper<FileHeader> fileHeaderLineMapper(DelimitedLineTokenizer headerRecordLineTokenizer,
-			FileHeaderFieldSetMapper fileHeaderFieldSetMapper) {
-		DefaultLineMapper<FileHeader> studentLineMapper = new DefaultLineMapper<>();
-		studentLineMapper.setLineTokenizer(headerRecordLineTokenizer);
-		studentLineMapper.setFieldSetMapper(fileHeaderFieldSetMapper);
-		return studentLineMapper;
-	}
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
 	public PatternMatchingCompositeLineMapper fileHeaderReaderStepPatternMatchingCompositeLineMapper(
@@ -109,6 +98,7 @@ public class FileHeaderRecordStepBeanConfig {
 		return patternMatchingCompositeLineMapper;
 	}
 
+	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Bean
 	public ItemReader<FileHeader> csvFileHeaderItemReader(

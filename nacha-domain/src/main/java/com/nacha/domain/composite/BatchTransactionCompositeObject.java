@@ -9,7 +9,6 @@ import com.nacha.domain.transaction.AbstractACHTransaction;
 public class BatchTransactionCompositeObject {
 
 	private final AbstractACHBatch achBatch;
-
 	private final Set<AbstractACHTransaction> transactionSet;
 
 	public BatchTransactionCompositeObject(AbstractACHBatch achBatch, Set<AbstractACHTransaction> transactionSet) {
